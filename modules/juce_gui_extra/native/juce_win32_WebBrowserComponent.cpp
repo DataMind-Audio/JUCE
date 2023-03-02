@@ -533,6 +533,18 @@ private:
     {
         if (webView != nullptr)
         {
+            EventRegistrationToken token;
+            webView->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler> (
+                [this] (ICoreWebView2*, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT
+                {
+                    LPWSTR json;
+                    args->get_WebMessageAsJson(&json);
+
+                    owner.scriptMessageReceived(JSON::fromString((String)json));
+
+                    return S_OK;
+                }).Get(), &token);
+
             webView->add_NavigationStarting (Callback<ICoreWebView2NavigationStartingEventHandler> (
                 [this] (ICoreWebView2*, ICoreWebView2NavigationStartingEventArgs* args) -> HRESULT
                 {

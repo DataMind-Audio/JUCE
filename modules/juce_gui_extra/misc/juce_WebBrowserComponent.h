@@ -254,6 +254,9 @@ public:
      */
     virtual void newWindowAttemptingToLoad (const String& newURL);
 
+    virtual void scriptMessageReceived (const juce::var messageBody) { ignoreUnused (messageBody); }
+
+
     //==============================================================================
     /** @internal */
     void paint (Graphics&) override;
