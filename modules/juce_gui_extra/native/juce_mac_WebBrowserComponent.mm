@@ -291,6 +291,12 @@ struct API_AVAILABLE (macos (10.10)) WebViewDelegateClass  : public ObjCClass<NS
                        displayError (getOwner (self), error);
                    });
 
+        addMethod (@selector (userContentController:didReceiveScriptMessage:),            
+                    [] (id self, SEL, WKUserContentController*, WKScriptMessage* message)
+                   {
+                       getOwner (self)->scriptMessageReceived (nsDictionaryToVar (message.body));
+                   });
+
         addMethod (@selector (webViewDidClose:),
                    [] (id self, SEL, WKWebView*)
                    {
@@ -515,6 +521,9 @@ public:
         static WebViewDelegateClass cls;
         webViewDelegate.reset ([cls.createInstance() init]);
         WebViewDelegateClass::setOwner (webViewDelegate.get(), owner);
+
+         WKUserContentController *userContentController = [[webView.get() configuration] userContentController];
+        [userContentController addScriptMessageHandler: webViewDelegate.get() name: @"juce"];
 
         [webView.get() setNavigationDelegate: webViewDelegate.get()];
         [webView.get() setUIDelegate:         webViewDelegate.get()];
