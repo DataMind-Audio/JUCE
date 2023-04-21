@@ -294,7 +294,22 @@ struct API_AVAILABLE (macos (10.10)) WebViewDelegateClass  : public ObjCClass<NS
         addMethod (@selector (userContentController:didReceiveScriptMessage:),            
                     [] (id self, SEL, WKUserContentController*, WKScriptMessage* message)
                    {
-                       getOwner (self)->scriptMessageReceived (nsDictionaryToVar (message.body));
+                        NSDictionary *body = message.body;
+
+                        if ([NSJSONSerialization isValidJSONObject:body]) {
+                            NSError *error;
+                            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:body options:NSJSONWritingPrettyPrinted error:&error];
+
+                            if (!jsonData) {
+                                NSLog(@"Error converting body to JSON data: %@", error.localizedDescription);
+                            } else {
+                                NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+                                getOwner (self)->scriptMessageReceived (JSON::fromString(nsStringToJuce(jsonString)));
+                            }
+                        } else {
+                            NSLog(@"The body is not a valid JSON object.");
+                        }
+                   
                    });
 
         addMethod (@selector (webViewDidClose:),
