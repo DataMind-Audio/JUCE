@@ -546,6 +546,9 @@ public:
        #if JUCE_DEBUG
         [[[webView.get() configuration] preferences] setValue: @(true) forKey: @"developerExtrasEnabled"];
        #endif
+
+        [webView.get().configuration.preferences setValue:@(true) forKey:@"allowFileAccessFromFileURLs"];
+        [webView.get().configuration setValue:@(true) forKey:@"allowUniversalAccessFromFileURLs"];
     }
 
     ~WKWebViewImpl() override
