@@ -494,6 +494,7 @@ public:
             return {};
 
         auto webViewOptions = Microsoft::WRL::Make<CoreWebView2EnvironmentOptions>();
+        webViewOptions->put_AdditionalBrowserArguments(L"--allow-file-access-from-files");
         const auto userDataFolder = options.getUserDataFolder().getFullPathName();
 
         auto hr = createWebViewEnvironmentWithOptions (nullptr,
@@ -705,6 +706,7 @@ private:
         {
             settings->put_IsStatusBarEnabled (! preferences.getIsStatusBarDisabled());
             settings->put_IsBuiltInErrorPageEnabled (! preferences.getIsBuiltInErrorPageDisabled());
+            settings->put_AreHostObjectsAllowed(true);
 
             if (userAgent.isNotEmpty())
             {
